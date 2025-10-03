@@ -26,3 +26,16 @@ export interface TimeTrackingSession {
   duration_minutes: number;
   duration_seconds: number;
 }
+
+export interface AttendanceRecord {
+  _id: string;
+  user_id: string;
+  user_name: string;
+  employee_id: string;
+  date: string;
+  check_in: string | null;
+  check_out: string | null;
+  total_hours: number;
+  status: 'Absent' | 'Insufficient' | 'Good' | 'Excellent';
+  time_tracking_sessions: TimeTrackingSession[];
+}

@@ -45,6 +45,19 @@ const Index = () => {
 
   const avgStatus = getAvgHoursStatus(avgHoursPerDay);
 
+  // Calculate screen time stats
+  const totalSessions = mockAttendanceData.reduce((acc, r) => acc + r.time_tracking_sessions.length, 0);
+  const totalScreenTimeHours = mockAttendanceData.reduce((acc, r) => 
+    acc + r.time_tracking_sessions.reduce((sum, s) => sum + s.duration_hours, 0), 0
+  );
+  const avgSessionDuration = totalSessions > 0 ? (totalScreenTimeHours / totalSessions) * 60 : 0; // in minutes
+  const totalKeystrokes = mockAttendanceData.reduce((acc, r) => 
+    acc + r.time_tracking_sessions.reduce((sum, s) => sum + s.total_keystrokes, 0), 0
+  );
+  const totalMouseClicks = mockAttendanceData.reduce((acc, r) => 
+    acc + r.time_tracking_sessions.reduce((sum, s) => sum + s.total_mouseclicks, 0), 0
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-6">
@@ -58,8 +71,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Machine Attendance Stats */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 text-muted-foreground">Machine Attendance</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="p-6 space-y-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
@@ -112,6 +127,57 @@ const Index = () => {
               <Progress value={(avgHoursPerDay / 8) * 100} className="h-2" />
             </div>
           </Card>
+          </div>
+        </div>
+
+        {/* Screen Time Stats */}
+        <div>
+          <h3 className="text-lg font-semibold mb-3 text-muted-foreground">Screen Time Tracking</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-6 space-y-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>Total Sessions</span>
+              </div>
+              <div className="space-y-2">
+                <p className="text-4xl font-bold">{totalSessions} <span className="text-base font-normal text-muted-foreground">sessions</span></p>
+                <p className="text-xs text-muted-foreground">Across all working days</p>
+              </div>
+            </Card>
+
+            <Card className="p-6 space-y-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <TrendingUp className="h-4 w-4" />
+                <span>Total Screen Time</span>
+              </div>
+              <div className="space-y-2">
+                <p className="text-4xl font-bold">{totalScreenTimeHours.toFixed(2)} <span className="text-base font-normal text-muted-foreground">hrs</span></p>
+                <Progress value={(totalScreenTimeHours / 240) * 100} className="h-2" />
+              </div>
+            </Card>
+
+            <Card className="p-6 space-y-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>Avg Session Duration</span>
+              </div>
+              <div className="space-y-2">
+                <p className="text-4xl font-bold">{avgSessionDuration.toFixed(0)} <span className="text-base font-normal text-muted-foreground">min</span></p>
+                <p className="text-xs text-muted-foreground">Per session average</p>
+              </div>
+            </Card>
+
+            <Card className="p-6 space-y-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserCheck className="h-4 w-4" />
+                <span>Activity Stats</span>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xl font-bold">{totalKeystrokes.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">keystrokes</span></p>
+                <p className="text-xl font-bold">{totalMouseClicks.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">clicks</span></p>
+              </div>
+            </Card>
+          </div>
         </div>
 
         {/* Attendance Records Table */}
